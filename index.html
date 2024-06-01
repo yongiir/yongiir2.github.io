@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор жидкости для электронных сигарет</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        label, input {
+            display: block;
+            margin-bottom: 10px;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Калькулятор жидкости для электронных сигарет</h1>
+    <label for="baseNicotineStrength">Крепость никотиновой базы (в мг/мл):</label>
+    <input type="number" id="baseNicotineStrength" step="0.1">
+
+    <label for="desiredNicotineStrength">Желаемая крепость жидкости (в мг/мл):</label>
+    <input type="number" id="desiredNicotineStrength" step="0.1">
+
+    <label for="finalVolume">Объем конечной жидкости (в мл):</label>
+    <input type="number" id="finalVolume" step="0.1">
+
+    <label for="vgPercentage">Желаемый процент VG (%):</label>
+    <input type="number" id="vgPercentage" step="0.1" max="100" min="0">
+
+    <label for="pgPercentage">Желаемый процент PG (%):</label>
+    <input type="number" id="pgPercentage" step="0.1" max="100" min="0">
+
+    <button onclick="calculateEJuice()">Рассчитать</button>
+
+    <h2>Результаты:</h2>
+    <p id="result"></p>
+
+    <script>
+        function calculateEJuice() {
+            // Получение значений из полей ввода
+            const baseNicotineStrength = parseFloat(document.getElementById('baseNicotineStrength').value);
+            const desiredNicotineStrength = parseFloat(document.getElementById('desiredNicotineStrength').value);
+            const finalVolume = parseFloat(document.getElementById('finalVolume').value);
+            const vgPercentage = parseFloat(document.getElementById('vgPercentage').value);
+            const pgPercentage = parseFloat(document.getElementById('pgPercentage').value);
+
+            // Проверка на корректность введенных данных
+            if (isNaN(baseNicotineStrength) || isNaN(desiredNicotineStrength) || isNaN(finalVolume) || isNaN(vgPercentage) || isNaN(pgPercentage)) {
+                document.getElementById('result').innerText = 'Пожалуйста, введите корректные числовые значения.';
+                return;
+            }
+
+            if (vgPercentage + pgPercentage !== 100) {
+                document.getElementById('result').innerText = 'Процентное соотношение VG и PG должно составлять 100%.';
+                return;
+            }
+
+            // Расчеты
+            const nicotineBaseVolume = (desiredNicotineStrength * finalVolume) / baseNicotineStrength;
+            const pgFromNicotineBase = nicotineBaseVolume;
+            const totalPgRequired = (pgPercentage / 100) * finalVolume;
+            const nicotineFreePgVolume = totalPgRequired - pgFromNicotineBase;
+            const vgVolume = (vgPercentage / 100) * finalVolume;
+
+            // Вывод результатов
+            document.getElementById('result').innerText = 
+                `Для приготовления ${finalVolume} мл жидкости с крепостью ${desiredNicotineStrength} мг/мл и соотношением ${vgPercentage}% VG / ${pgPercentage}% PG, вам потребуется:\n` +
+                `${nicotineBaseVolume.toFixed(2)} мл никотиновой базы (крепость ${baseNicotineStrength} мг/мл)\n` +
+                `${nicotineFreePgVolume.toFixed(2)} мл PG (безникотиновая база)\n` +
+                `${vgVolume.toFixed(2)} мл VG`;
+        }
+    </script>
+</body>
+</html>
